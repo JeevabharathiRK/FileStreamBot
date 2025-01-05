@@ -18,8 +18,7 @@ def verify_user(func: Callable):
         elif isinstance(update, Message):
             return await update.reply(
                 text = UserNotInAllowedList,
-                quote = True,
-                reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Deploy Own', url='https://github.com/TheCaduceus/FileStreamBot')]])
+                quote = True
             )
         
     return decorator
