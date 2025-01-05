@@ -1,9 +1,9 @@
 WelcomeText = \
 """\
-Hi **%(first_name)s**, send me a file to instantly generate direct links.
+Hi **%(first_name)s**, send me a file to instantly generate file links.
 
 **Commands:**
-/link - Reply to a file with /link command to get download or stream link.
+/privacy - Reply to file with the /link command to get download or stream link.
 /log - Get bot's log file. (owner only)
 /help - Show this message.
 """
