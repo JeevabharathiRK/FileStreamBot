@@ -13,11 +13,6 @@ async def start_command(_, msg: Message):
         quote = True
     )
 
-@TelegramBot.on_message(filters.command('privacy') & filters.group)
-@verify_user
-async def privacy_command(_, msg: Message):
-    await msg.reply(text=PrivacyText, quote=True, disable_web_page_preview=True)
-
 @TelegramBot.on_message(filters.command('log') & filters.chat(Telegram.OWNER_ID))
 async def log_command(_, msg: Message):
     await msg.reply_document('event-log.txt', quote=True)
