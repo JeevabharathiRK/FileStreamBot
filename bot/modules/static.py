@@ -1,30 +1,11 @@
 WelcomeText = \
 """\
-Hi **%(first_name)s**, send me a file to instantly generate file links.
+Hi **%(first_name)s**, send me a file to instantly generate direct links.
 
 **Commands:**
-/privacy - View bot's privacy policy.
+/link - Reply to a file with /link command to get download or stream link.
 /log - Get bot's log file. (owner only)
 /help - Show this message.
-"""
-
-PrivacyText = \
-"""
-**Privacy Policy**
-
-**1.Data Storage:** Files you upload/send are securely saved in the bot's private Telegram channel.
-
-**2.Download Links:** Links include a secret code to prevent unauthorized access.
-
-**3.User Control:** You can revoke links anytime using the "Revoke" button.
-
-**4.Moderation:** The bot owner can view and delete your files if necessary.
-
-**5.Open Source:** The bot is [open source](https://github.com/TheCaduceus/FileStreamBot). Deploy your own instance for maximum privacy.
-
-**6.Retention:** Files are stored until you revoke their links.
-
-__By using this bot, you agree to this policy.__
 """
 
 FileLinksText = \
