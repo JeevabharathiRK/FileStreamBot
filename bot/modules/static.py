@@ -12,7 +12,6 @@ FileLinksText = \
 """
 **Download Link:**
 `%(dl_link)s`
-Consider click **Revoke** after using this links!.
 """
 
 MediaLinksText = \
@@ -21,7 +20,6 @@ MediaLinksText = \
 `%(dl_link)s`
 **Stream Link:**
 `%(stream_link)s`
-Consider click **Revoke** after using this links!.
 """
 
 InvalidQueryText = \
