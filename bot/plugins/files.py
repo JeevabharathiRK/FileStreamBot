@@ -68,7 +68,7 @@ async def handle_user_file(_, msg: Message):
         else:
             # Handle invalid file types
             await msg.reply(
-                text="Sorry, the replied message doesn't contain a supported file type.",
+                text="Sorry, it looks like the file type isn’t supported. Try sending it again and reply to it using /link.",
                 quote=False
             )
     else:
