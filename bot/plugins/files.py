@@ -7,7 +7,7 @@ from bot.modules.decorators import verify_user
 from bot.modules.static import *
 
 @TelegramBot.on_message(
-    filters.chat_type.groups
+    filters.group
     & (
         filters.document
         | filters.video
