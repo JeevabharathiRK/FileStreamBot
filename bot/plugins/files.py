@@ -7,6 +7,22 @@ from bot.config import Telegram, Server
 from bot.modules.decorators import verify_user
 from bot.modules.static import *
 
+def _extract_poster_url(caption: str) -> str | None:
+    if not caption:
+        return None
+    m = re.search(r"Start\s*:?\s*(https?://\S+)", caption, flags=re.IGNORECASE)
+    if not m:
+        m = re.search(r"(https?://\S+\.(?:jpg|jpeg|png|webp))", caption, flags=re.IGNORECASE)
+    if not m:
+        return None
+    url = m.group(1)
+
+    # For m.media-amazon.com JPGs, keep only up to '@.jpg' for higher quality
+    if "m.media-amazon.com" in url and "@" in url and re.search(r"\.jpe?g$", url, flags=re.IGNORECASE):
+        url = re.sub(r"@[^ ]*\.jpe?g$", "@.jpg", url, flags=re.IGNORECASE)
+
+    return url
+
 # This handler listens to messages in group chats and handles file uploads
 @TelegramBot.on_message(filters.command('link') & filters.group)
 @verify_user
@@ -45,9 +61,6 @@ async def handle_user_file(_, msg: Message):
                             [
                                 InlineKeyboardButton('Download', url=dl_link),
                                 InlineKeyboardButton('Stream', url=stream_link)
-                            ],
-                            [
-                                InlineKeyboardButton('Revoke', callback_data=f'rm_{file_id}_{secret_code}')
                             ]
                         ]
                     )
@@ -60,8 +73,7 @@ async def handle_user_file(_, msg: Message):
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
-                                InlineKeyboardButton('Download', url=dl_link),
-                                InlineKeyboardButton('Revoke', callback_data=f'rm_{file_id}_{secret_code}')
+                                InlineKeyboardButton('Download', url=dl_link)
                             ]
                         ]
                     )
@@ -130,8 +142,7 @@ async def handle_storage_channel_file(client, msg: Message):
                 [
                     InlineKeyboardButton("Download", url=dl_link),
                     InlineKeyboardButton("Stream", url=stream_link),
-                ],
-                [InlineKeyboardButton("Revoke", callback_data=f"rm_{file_id}_{secret_code}")],
+                ]
             ]
         )
     else:
@@ -139,16 +150,25 @@ async def handle_storage_channel_file(client, msg: Message):
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("Download", url=dl_link),
-                    InlineKeyboardButton("Revoke", callback_data=f"rm_{file_id}_{secret_code}"),
+                    InlineKeyboardButton("Download", url=dl_link)
                 ]
             ]
         )
 
-    # Send the same message as /link to the target group
+    # Use poster image if present; caption holds the same text and buttons
+    poster_url = _extract_poster_url(caption)
+
     if Telegram.LINKS_GROUP_ID:
-        await client.send_message(
-            chat_id=Telegram.LINKS_GROUP_ID,
-            text=text,
-            reply_markup=keyboard,
-        )
+        if poster_url:
+            await client.send_photo(
+                chat_id=Telegram.LINKS_GROUP_ID,
+                photo=poster_url,
+                caption=text,
+                reply_markup=keyboard,
+            )
+        else:
+            await client.send_message(
+                chat_id=Telegram.LINKS_GROUP_ID,
+                text=text,
+                reply_markup=keyboard,
+            )
