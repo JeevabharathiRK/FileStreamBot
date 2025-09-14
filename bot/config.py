@@ -9,6 +9,7 @@ class Telegram:
     BOT_TOKEN = env.get("TELEGRAM_BOT_TOKEN", "1234567:xyz")
     CHANNEL_ID = int(env.get("TELEGRAM_CHANNEL_ID", -100123456789))
     SECRET_CODE_LENGTH = int(env.get("SECRET_CODE_LENGTH", 24))
+    LINKS_GROUP_ID = int(env.get("LINKS_GROUP_ID", 0))
 
 class Server:
     BASE_URL = env.get("BASE_URL", "http://127.0.0.1:8080")
