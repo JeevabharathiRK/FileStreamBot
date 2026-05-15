@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Open in VLC</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg-1: #f2efe9;
+            --bg-2: #e4f0ff;
+            --bg-3: #f7e6d4;
+            --ink: #1a1d21;
+            --muted: #56626a;
+            --accent: #0c7c7b;
+            --accent-2: #0a5e5d;
+            --card: #ffffff;
+            --border: rgba(26, 29, 33, 0.1);
+            --shadow: 0 20px 40px rgba(26, 29, 33, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Space Grotesk", sans-serif;
+            color: var(--ink);
+            background: linear-gradient(120deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+
+        .shell {
+            width: min(680px, 100%);
+            background: var(--card);
+            border-radius: 28px;
+            padding: 36px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shell::before,
+        .shell::after {
+            content: "";
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(12, 124, 123, 0.18), rgba(12, 124, 123, 0));
+            top: -80px;
+            right: -60px;
+            pointer-events: none;
+        }
+
+        .shell::after {
+            width: 200px;
+            height: 200px;
+            left: -70px;
+            bottom: -80px;
+            background: radial-gradient(circle, rgba(10, 94, 93, 0.18), rgba(10, 94, 93, 0));
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: clamp(26px, 3vw, 34px);
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            margin: 0 0 20px 0;
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 16px;
+        }
+
+        .actions {
+            display: grid;
+            gap: 12px;
+            margin: 20px 0 16px 0;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        .button.primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 12px 24px rgba(12, 124, 123, 0.28);
+        }
+
+        .button.primary:hover {
+            background: var(--accent-2);
+            transform: translateY(-1px);
+        }
+
+        .button.secondary {
+            background: transparent;
+            color: var(--accent);
+            border-color: rgba(12, 124, 123, 0.3);
+        }
+
+        .button.secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(12, 124, 123, 0.12);
+        }
+
+        .link-box {
+            background: #f7f9fb;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 14px;
+            color: var(--muted);
+            word-break: break-all;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .status.error {
+            color: #b42318;
+        }
+
+        @media (max-width: 520px) {
+            .shell {
+                padding: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="shell">
+        <h1>Open this stream in VLC</h1>
+        <p>Use the button below to launch VLC. If it does not open, copy the stream link and paste it into VLC manually.
+        </p>
+
+        <div class="actions">
+            <a id="open-vlc" class="button primary" href="#" rel="noopener">Open in VLC</a>
+            <button id="copy-link" class="button secondary" type="button">Copy stream link</button>
+        </div>
+
+        <div id="stream-link" class="link-box">Waiting for link...</div>
+        <div id="status" class="status"></div>
+    </main>
+
+    <script>
+        var mediaLink = "{{ mediaLink }}";
+        var openButton = document.getElementById("open-vlc");
+        var copyButton = document.getElementById("copy-link");
+        var linkBox = document.getElementById("stream-link");
+        var status = document.getElementById("status");
+
+        function setStatus(message, isError) {
+            status.textContent = message;
+            status.className = isError ? "status error" : "status";
+        }
+
+        if (mediaLink) {
+            linkBox.textContent = mediaLink;
+            openButton.href = "vlc://" + mediaLink;
+
+            copyButton.addEventListener("click", function () {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(mediaLink).then(function () {
+                        setStatus("Stream link copied.");
+                    }).catch(function () {
+                        setStatus("Could not copy. Long-press or select the link above.", true);
+                    });
+                } else {
+                    setStatus("Clipboard not available. Long-press or select the link above.", true);
+                }
+            });
+        } else {
+            linkBox.textContent = "No stream link provided.";
+            openButton.setAttribute("aria-disabled", "true");
+            openButton.href = "#";
+            setStatus("Error: media link missing.", true);
+        }
+    </script>
+</body>
+
+</html>
