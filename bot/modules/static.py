@@ -16,6 +16,7 @@ FileLinksText = \
 
 MediaLinksText = \
 """
+**File Name:** `%(file_name)s`
 **Download Link:**
 `%(dl_link)s`
 **Stream Link:**
