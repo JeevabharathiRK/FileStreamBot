@@ -81,3 +81,8 @@ async def transmit_file(file_id):
 async def stream_file(file_id):
     code = request.args.get('code') or abort(401)
     return await render_template('player.html', mediaLink=f'{Server.BASE_URL}/dl/{file_id}?code={code}')
+
+@bp.route('/vlc/<int:file_id>')
+async def vlc_page(file_id):
+    code = request.args.get('code') or abort(401)
+    return await render_template('vlc.html', mediaLink=f'{Server.BASE_URL}/dl/{file_id}?code={code}')

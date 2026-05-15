@@ -53,14 +53,16 @@ async def handle_user_file(_, msg: Message):
             # Generate stream link for videos
             if (replied_message.document and 'video' in replied_message.document.mime_type) or replied_message.video:
                 stream_link = f'{Server.BASE_URL}/stream/{file_id}?code={secret_code}'
+                vlc_link = f'{Server.BASE_URL}/vlc/{file_id}?code={secret_code}'
                 await msg.reply(
-                    text=MediaLinksText % {'dl_link': dl_link, 'stream_link': stream_link},
+                    text=MediaLinksText % {'file_name': replied_message.document.file_name if replied_message.document else replied_message.video.file_name if replied_message.video else "Unknown File", 'dl_link': dl_link, 'stream_link': stream_link},
                     quote=True,
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
                                 InlineKeyboardButton('Download', url=dl_link),
-                                InlineKeyboardButton('Stream', url=stream_link)
+                                InlineKeyboardButton('Stream', url=stream_link),
+                                InlineKeyboardButton('VLC', url=vlc_link)
                             ]
                         ]
                     )
@@ -136,12 +138,14 @@ async def handle_storage_channel_file(client, msg: Message):
 
     if is_video:
         stream_link = f"{Server.BASE_URL}/stream/{file_id}?code={secret_code}"
-        text = MediaLinksText % {"dl_link": dl_link, "stream_link": stream_link}
+        vlc_link = f"{Server.BASE_URL}/vlc/{file_id}?code={secret_code}"
+        text = MediaLinksText % {"file_name": msg.document.file_name if msg.document else msg.video.file_name if msg.video else "Unknown File", "dl_link": dl_link, "stream_link": stream_link}
         keyboard = InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton("Download", url=dl_link),
                     InlineKeyboardButton("Stream", url=stream_link),
+                    InlineKeyboardButton("VLC", url=vlc_link),
                 ]
             ]
         )
