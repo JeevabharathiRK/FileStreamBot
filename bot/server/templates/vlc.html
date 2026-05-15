@@ -182,7 +182,21 @@
 
         if (mediaLink) {
             linkBox.textContent = mediaLink;
-            openButton.href = "vlc://" + mediaLink;
+
+            var encodedLink = encodeURIComponent(mediaLink);
+            var vlcSchemeLink = "vlc://" + encodedLink;
+            var isAndroid = /android/i.test(navigator.userAgent || "");
+            var intentLink = vlcSchemeLink;
+
+            try {
+                var url = new URL(mediaLink);
+                intentLink = "intent://" + url.host + url.pathname + url.search +
+                    "#Intent;scheme=" + url.protocol.replace(":", "") + ";package=org.videolan.vlc;end";
+            } catch (error) {
+                // Fallback to VLC scheme if URL parsing fails.
+            }
+
+            openButton.href = isAndroid ? intentLink : vlcSchemeLink;
 
             copyButton.addEventListener("click", function () {
                 if (navigator.clipboard && navigator.clipboard.writeText) {
